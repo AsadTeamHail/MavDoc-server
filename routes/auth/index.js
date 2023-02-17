@@ -96,19 +96,19 @@ routes.post("/signUp", async(req, res)=>{
   const { phone, fullname, company, type } = req.body;
   try {
     if(type=="customer"){
-      const customerVerification = await Users.findOne({where:{email:email}});
+      const customerVerification = await Users.findOne({where:{phone:phone}});
         if(customerVerification){
           res.send('Already Exists');
         }else{
           const customer = await Users.create({
-            f_name:f_name, l_name:l_name, email:email,role:'customer', password:otp
+            fullname:fullname, company:company, phone:phone ,type:'customer', password:otp
           });
-          name(customer.email, otp, 'Welcome To Innovatory');
+          name(customer.email, otp, 'Welcome To MavDocs');
           res.json({status:'success',customer});
         }
     }else if(type=="rider"){
       
-      const riderVerification = await Users.findOne({where:{email:email}});
+      const riderVerification = await Users.findOne({where:{phone:phone}});
         if(riderVerification){
           res.json({status:'error', message:"Already Exists!"});
         } else {
