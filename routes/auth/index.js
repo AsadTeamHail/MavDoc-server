@@ -103,7 +103,7 @@ routes.post("/signUp", async(req, res)=>{
           const customer = await Users.create({
             fullname:fullname, company:company, phone:phone ,type:'customer', password:otp
           });
-          name(customer.email, otp, 'Welcome To MavDocs');
+          name(customer.phone, otp, 'Welcome To MavDocs');
           res.json({status:'success',customer});
         }
     }else if(type=="rider"){
