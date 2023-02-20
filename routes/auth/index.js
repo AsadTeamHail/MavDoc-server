@@ -7,46 +7,20 @@ const Op = Sequelize.Op;
 
 const { Users, ShopUsers } = require('../../models');
 
-async function main(x,otp) {
-  // const client = Sib.ApiClient.instance;
-  // const apiKey = client.authentications['api-key'];
-  // apiKey.apiKey = 'xsmtpsib-009a6fa866b33ba10e58c8fd1a844d514a89d87ce33172bd4d538d7d92cd6ba3-7gKWANxV96aqfGSZ';
-  // const transEmailApi = new Sib.TransactionalEmailsApi();
-  // const sender = { email:'asadshamiteamhail@gmail.com',name:'Asad Tanvir'};
-  // const recievers = [ { email:x, }, ];
-
-  // transEmailApi.sendTransacEmail({
-  //   sender,
-  //   to: recievers,
-  //   subject:sub,
-  //   //textContent:'Wishing you a warm welcome to Hail Technologies',
-  //   htmlContent:`<p>Your Account has been successfully setup</p>
-  //     <p>Enter the following code in the login screen</p>
-  //     <h1>{{params.pass}}</h1>
-  //     <br/>
-  //     <p>Do not share this code with anyone else.</p>
-  //     <br/>
-  //     <p>Regards</p>
-  //     <p>Support Team</p>`,
-  //   params:{
-  //       pass:otp,
-  //   },
-  // }).then((x)=>console.log(x))
-  // .catch((e)=>console.log(e));
-  console.log("EMAIL",x)
+async function mailFunc(x,otp) {
   let transporter = nodemailer.createTransport({
     host: "smtp-relay.sendinblue.com",
-    port: 25,
+    port: 587,
     auth: {
       user: 'asadworkemail@gmail.com', 
-      pass: 'xsmtpsib-009a6fa866b33ba10e58c8fd1a844d514a89d87ce33172bd4d538d7d92cd6ba3-7gKWANxV96aqfGSZ',
+      pass: 'xsmtpsib-009a6fa866b33ba10e58c8fd1a844d514a89d87ce33172bd4d538d7d92cd6ba3-khamMVscypTINUYw',
     },
   });
 
   let info = await transporter.sendMail({
-    from: `"MavDocs Team" <asadshamiteamhail@gmail.com>`,
-    to: "asadworkemail@gmail.com",
-    subject: "<p>Welcome To MavDocs<p>", 
+    from: `"MavDocs Team" <MavDocs@gmail.com>`,
+    to: `${x}`,
+    subject: "Welcome To MavDocs", 
     html: `<p>Your Account has been successfully setup</p>
         <p>Enter the following code in the login screen</p>
         <h1>${otp}</h1>
@@ -117,7 +91,7 @@ routes.post("/verification", async(req, res)=>{
 
 routes.post("/signUp", async(req, res)=>{
 
-  const otp = Math.floor(100000 + Math.random() * 900000);
+  const otp = Math.floor(1000 + Math.random() * 9000);
 
   const { phone, fullname, company, type } = req.body;
   try {
@@ -129,8 +103,8 @@ routes.post("/signUp", async(req, res)=>{
           const customer = await Users.create({
             fullname:fullname, company:company, phone:phone ,type:'customer', password:otp
           });
-           main(customer.phone, otp);
-          res.json({status:'success',customer});
+           mailFunc(customer.phone, otp);
+          res.status(200).json(customer)
         }
     }else if(type=="rider"){
       
@@ -156,39 +130,39 @@ routes.post("/signUp", async(req, res)=>{
   }
 });
 
-// routes.post("/login", async(req, res)=>{
+routes.post("/login", async(req, res)=>{
 
-//   const otp = Math.floor(100000 + Math.random()*900000);
-//   const { email, type } = req.body;
-//   try {
-//     if(type=="customer") {
-//       const customerVerification = await Users.findOne({where:{email:email}});
-//       if(customerVerification){
-//         const customer = await Users.update({password:otp},{where:{id:customerVerification.id}});
-//         console.log(customer);
-//         name(customerVerification.email, otp, 'Innovatory OTP');
-//         res.status(200).json(customerVerification)
-//         // res.json({status:'success'},customerVerification);
-//       }else{
-//         res.json({status:'error'});
-//       }
-//     } else if(type=="rider") {
-//       const shopOwnerVerification = await ShopUsers.findOne({where:{email:email}});
-//         if(shopOwnerVerification){
-//           await ShopUsers.update({password:otp},{where:{id:shopOwnerVerification.id}});
-//           name(shopOwnerVerification.email, otp, 'Innovatory OTP');
-//           res.json({status:'success'});
-//         } else {
-//           res.json({status:'error'});
-//         }
-//     }
-//     else {
-//       res.json({status:'error'});
-//     }
-//   }
-//   catch (error) {
-//     res.send(error);
-//   }
-// });
+  const otp = Math.floor(1000 + Math.random() * 9000);
+  const { phone, type } = req.body;
+  try {
+    if(type=="customer") {
+      const customerVerification = await Users.findOne({where:{phone:phone}});
+      if(customerVerification){
+        const customer = await Users.update({password:otp},{where:{id:customerVerification.id}});
+        console.log(customer);
+        mailFunc(customerVerification.phone, otp);
+        res.status(200).json(customerVerification)
+        // res.json({status:'success'},customerVerification);
+      }else{
+        res.json({status:'error'});
+      }
+    } else if(type=="rider") {
+      const shopOwnerVerification = await ShopUsers.findOne({where:{phone:phone}});
+        if(shopOwnerVerification){
+          await ShopUsers.update({password:otp},{where:{id:shopOwnerVerification.id}});
+          mailFunc(shopOwnerVerification.phone, otp);
+          res.json({status:'success'});
+        } else {
+          res.json({status:'error'});
+        }
+    }
+    else {
+      res.json({status:'error'});
+    }
+  }
+  catch (error) {
+    res.send(error);
+  }
+});
 
 module.exports = routes;
