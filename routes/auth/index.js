@@ -35,7 +35,7 @@ async function mailFunc(x,otp) {
 
 routes.post("/verification", async(req, res)=>{
   console.log(req.body)
-    const { phone, pass, type } = req.body
+    const { phone, pass, type } = req.body;
 
     if(type=="customer"){
       if(req.body.phone && req.body.pass){
