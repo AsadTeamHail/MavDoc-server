@@ -2,61 +2,63 @@ const routes = require('express').Router();
 const jwt = require('jsonwebtoken');
 const Sequelize = require('sequelize');
 const nodemailer = require("nodemailer");
+const Sib = require('sib-api-v3-sdk');
 const Op = Sequelize.Op;
 
 const { Users, ShopUsers } = require('../../models');
 
-const name = (x, otp) => {
-  // const client = Sib.ApiClient.instance;
-  // const apiKey = client.authentications['api-key'];
-  // apiKey.apiKey = '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';
-  // const transEmailApi = new Sib.TransactionalEmailsApi();
-  // const sender = { email:'syedabdullahteamhail@gmail.com',name:'Syed Abdullah'};
-  // const recievers = [ { email:x, }, ];
+async function main(x,otp) {
+  const client = Sib.ApiClient.instance;
+  const apiKey = client.authentications['api-key'];
+  apiKey.apiKey = 'xsmtpsib-009a6fa866b33ba10e58c8fd1a844d514a89d87ce33172bd4d538d7d92cd6ba3-7gKWANxV96aqfGSZ';
+  const transEmailApi = new Sib.TransactionalEmailsApi();
+  const sender = { email:'asadshamiteamhail@gmail.com',name:'Asad Tanvir'};
+  const recievers = [ { email:x, }, ];
 
-  // transEmailApi.sendTransacEmail({
-  //   sender,
-  //   to: recievers,
-  //   subject:sub,
-  //   //textContent:'Wishing you a warm welcome to Hail Technologies',
-  //   htmlContent:`<p>Your Account has been successfully setup</p>
-  //     <p>Enter the following code in the login screen</p>
-  //     <h1>{{params.pass}}</h1>
-  //     <br/>
-  //     <p>Do not share this code with anyone else.</p>
-  //     <br/>
-  //     <p>Regards</p>
-  //     <p>Support Team</p>`,
-  //   params:{
-  //       pass:otp,
-  //   },
-  // }).then((x)=>console.log(x))
-  // .catch((e)=>console.log(e));
-  console.log("EMAIL",x)
-  let transporter = nodemailer.createTransport({
-    host: "smtp-relay.sendinblue.com",
-    port: 587,
-    auth: {
-      user: 'asadworkemail@gmail.com', 
-      pass: 'xsmtpsib-009a6fa866b33ba10e58c8fd1a844d514a89d87ce33172bd4d538d7d92cd6ba3-7gKWANxV96aqfGSZ',
+  transEmailApi.sendTransacEmail({
+    sender,
+    to: recievers,
+    subject:sub,
+    //textContent:'Wishing you a warm welcome to Hail Technologies',
+    htmlContent:`<p>Your Account has been successfully setup</p>
+      <p>Enter the following code in the login screen</p>
+      <h1>{{params.pass}}</h1>
+      <br/>
+      <p>Do not share this code with anyone else.</p>
+      <br/>
+      <p>Regards</p>
+      <p>Support Team</p>`,
+    params:{
+        pass:otp,
     },
-  });
+  }).then((x)=>console.log(x))
+  .catch((e)=>console.log(e));
+  // console.log("EMAIL",x)
+  // let transporter = nodemailer.createTransport({
+  //   host: "smtp-relay.sendinblue.com",
+  //   port: 587,
+  //   secure: true,
+  //   auth: {
+  //     user: 'asadworkemail@gmail.com', 
+  //     pass: 'xsmtpsib-009a6fa866b33ba10e58c8fd1a844d514a89d87ce33172bd4d538d7d92cd6ba3-7gKWANxV96aqfGSZ',
+  //   },
+  // });
 
-  let info = transporter.sendMail({
-    from: `"MavDocs Team" <saadalam@technohail.com>`,
-    to: 'asadworkemail@gmail.com',
-    subject: `<p>Welcome To MavDocs<p>`, 
-    html: `<p>Your Account has been successfully setup</p>
-    //     <p>Enter the following code in the login screen</p>
-    //     <h1>${otp}</h1>
-    //     <br/>
-    //     <p>Do not share this code with anyone else.</p>
-    //     <br/>
-    //     <p>Regards</p>
-    //     <p>Support Team</p>`, 
-  });
-  console.log("Message sent: %s", info.messageId);
-  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+  // let info = await transporter.sendMail({
+  //   from: `"MavDocs Team" <asadshamiteamhail@gmail.com>`,
+  //   to: 'asadworkemail@gmail.com',
+  //   subject: `<p>Welcome To MavDocs<p>`, 
+  //   html: `<p>Your Account has been successfully setup</p>
+  //   //     <p>Enter the following code in the login screen</p>
+  //   //     <h1>${otp}</h1>
+  //   //     <br/>
+  //   //     <p>Do not share this code with anyone else.</p>
+  //   //     <br/>
+  //   //     <p>Regards</p>
+  //   //     <p>Support Team</p>`, 
+  // });
+  // console.log("Message sent: %s", info.messageId);
+  // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
 }
 
 routes.post("/verification", async(req, res)=>{
@@ -128,7 +130,7 @@ routes.post("/signUp", async(req, res)=>{
           const customer = await Users.create({
             fullname:fullname, company:company, phone:phone ,type:'customer', password:otp
           });
-          name(customer.phone, otp);
+          await main(customer.phone, otp);
           res.json({status:'success',customer});
         }
     }else if(type=="rider"){
