@@ -1,6 +1,5 @@
 const routes = require('express').Router();
 const jwt = require('jsonwebtoken');
-const Sib = require('sib-api-v3-sdk');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
@@ -103,7 +102,7 @@ routes.post("/signUp", async(req, res)=>{
           const customer = await Users.create({
             fullname:fullname, company:company, phone:phone ,type:'customer', password:otp
           });
-          name(customer.phone, otp, 'Welcome To MavDocs');
+          // name(customer.phone, otp, 'Welcome To MavDocs');
           res.json({status:'success',customer});
         }
     }else if(type=="rider"){

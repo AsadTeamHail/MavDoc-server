@@ -37,6 +37,13 @@ module.exports = (sequelize, DataTypes) => {
                 notEmpty: true
             }
         },
+        type:{
+            type:DataTypes.STRING,
+            allowNull: false,
+            validate:{
+                notEmpty: true
+            }
+        },
     })
     return Users
 }
