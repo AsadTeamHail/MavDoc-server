@@ -2,7 +2,6 @@ const routes = require('express').Router();
 const jwt = require('jsonwebtoken');
 const Sequelize = require('sequelize');
 const nodemailer = require("nodemailer");
-const Sib = require('sib-api-v3-sdk');
 const Op = Sequelize.Op;
 
 const { Users, ShopUsers } = require('../../models');
@@ -13,7 +12,7 @@ async function mailFunc(x,otp) {
     port: 587,
     auth: {
       user: 'asadworkemail@gmail.com', 
-      pass: 'xsmtpsib-009a6fa866b33ba10e58c8fd1a844d514a89d87ce33172bd4d538d7d92cd6ba3-khamMVscypTINUYw',
+      pass: 'xsmtpsib-009a6fa866b33ba10e58c8fd1a844d514a89d87ce33172bd4d538d7d92cd6ba3-gwHJXZSsp3I2PFnm',
     },
   });
 
@@ -35,33 +34,33 @@ async function mailFunc(x,otp) {
 }
 
 routes.post("/verification", async(req, res)=>{
-    const { email, pass, type } = req.body
+  console.log(req.body)
+    const { phone, pass, type } = req.body
 
     if(type=="customer"){
-
-      if(req.body.email && req.body.pass){
-        const users = await Users.findOne({where:{email:email, password:pass}})
+      if(req.body.phone && req.body.pass){
+        const users = await Users.findOne({where:{phone:phone, password:pass}})
         if(users){
-          if(email==users.email && pass==users.password){
-            const payload = { type:type, picture:users.profile_pic, fullname:`${users.fullname} ${users.l_name}`,loginId:`${users.id}` }
+          if(phone==users.phone && pass==users.password){
+            const payload = { type:type, phone:users.phone, fullname:`${users.fullname}`,loginId:`${users.id}`,company:`${users.company}` }
             jwt.sign(
               payload,
               'qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnm',
               {expiresIn:"8760h"},
               (err,token) => {
                 if(err) return res.json({message: err})
-                  return res.json({
+                  return res.status(200).json({
                       message:"Success",
                       token: "BearerSplit"+token
                     })
                   }
                 )
-          } else {  return res.json({message:"Invalid"}) }
+          } else { return res.json({message:"Invalid"}) }
         }
         else {  return res.json({message:"Invalid"})  }
       } else {  return res.json({message:"Invalid"})  }
 
-    }else if(type=="shopowner"){
+    } else if(type=="shopowner"){
 
       if(req.body.email && req.body.pass){
         const users = await ShopUsers.findOne({where:{email:email, password:pass}})
@@ -74,7 +73,7 @@ routes.post("/verification", async(req, res)=>{
               {expiresIn:"8760h"},
               (err,token) => {
                 if(err) return res.json({message: err})
-                  return res.json({
+                  return res.status(200).json({
                       message:"Success",
                       token: "BearerSplit"+token
                     })
@@ -142,9 +141,8 @@ routes.post("/login", async(req, res)=>{
         console.log(customer);
         mailFunc(customerVerification.phone, otp);
         res.status(200).json(customerVerification)
-        // res.json({status:'success'},customerVerification);
       }else{
-        res.json({status:'error'});
+        res.sendStatus(404)
       }
     } else if(type=="rider") {
       const shopOwnerVerification = await ShopUsers.findOne({where:{phone:phone}});
