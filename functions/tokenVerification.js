@@ -9,13 +9,14 @@ function verify(req, res, next){
           message:"Failed To Authenticate"
         })
         req.user={};
-        req.user.id = decoded.id
-        req.user.username = decoded.username
+        req.user.id = decoded.id,
+        req.user.fullname = decoded.fullname,
         next()
       })
     }else{
       res.json({message:"Incorrect Token Given", isLoggedIn:false})
     }
 }
+
 
 module.exports = verify;

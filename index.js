@@ -5,10 +5,7 @@ const bodyParser = require('body-parser');
 var morgan = require('morgan');
 const db = require("./models");
 
-// const verify = require('./functions/tokenVerification');
-
-//const { Items } = require("./functions/associations/shopAssociation")
-
+const verify = require('./functions/tokenVerification'); //import from functions folder
 const authRoutes = require('./routes/auth')
 
 app.use(morgan('tiny'));
@@ -20,7 +17,7 @@ app.use(express.json());
 db.sequelize.sync();
 
 app.get("/", (req, res) => { res.json('Welcome to MavDocs Server') });
-// app.get("/getUser", verify, (req, res) => { res.json({isLoggedIn:true, username:req.body.username}) });
+app.get("/isLoggedInVerification", verify, (req, res) => { res.json({isLoggedIn:true, fullname:req.body.fullname}) });
 
 app.use("/auth", authRoutes);
 
