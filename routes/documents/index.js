@@ -32,10 +32,14 @@ routes.post("/CreateDocSubTypes", async(req, res)=>{
 })
 
 routes.get("/GetDocSubTypes", async(req, res)=>{
+    try{
     const doc = await DocSubType.findAll({
         where:{DocumentId:req.headers.doc_id}
     })
-    res.send(doc)
+    res.json({status:'Success',doc})
+    }catch(e){
+        res.json({message:'Failed'})
+    }
 })
 
 module.exports = routes;
