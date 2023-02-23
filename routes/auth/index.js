@@ -6,6 +6,7 @@ const Op = Sequelize.Op;
 
 const { Users, ShopUsers } = require('../../models');
 
+//Mail Function
 async function mailFunc(x,otp) {
   let transporter = nodemailer.createTransport({
     host: "smtp-relay.sendinblue.com",
@@ -32,7 +33,7 @@ async function mailFunc(x,otp) {
   console.log("Message sent: %s", info.messageId);
   console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
 }
-
+//Verification API
 routes.post("/verification", async(req, res)=>{
   console.log(req.body)
     const { phone, pass, type } = req.body;
@@ -87,7 +88,7 @@ routes.post("/verification", async(req, res)=>{
     }
 
 });
-
+//SignUP API
 routes.post("/signUp", async(req, res)=>{
 
   const otp = Math.floor(1000 + Math.random() * 9000);
@@ -128,7 +129,7 @@ routes.post("/signUp", async(req, res)=>{
     res.json({status:'error', message:"Something Went Wrong Please Try Again"});
   }
 });
-
+//Login API
 routes.post("/login", async(req, res)=>{
 
   const otp = Math.floor(1000 + Math.random() * 9000);

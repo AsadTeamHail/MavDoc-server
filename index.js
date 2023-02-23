@@ -7,7 +7,6 @@ const db = require("./models");
 
 const verify = require('./functions/tokenVerification'); //import from functions folder
 const authRoutes = require('./routes/auth')
-const DocRoutes = require('./routes/documents')
 
 app.use(morgan('tiny'));
 
@@ -21,7 +20,6 @@ app.get("/", (req, res) => { res.json('Welcome to MavDocs Server') });
 app.get("/isLoggedInVerification", verify, (req, res) => { res.json({isLoggedIn:true, fullname:req.body.fullname}) });
 
 app.use("/auth", authRoutes);
-app.use("/docs", DocRoutes);
 
 const PORT = process.env.PORT || 8080;
 
